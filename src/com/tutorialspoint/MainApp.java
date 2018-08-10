@@ -1,15 +1,18 @@
 package com.tutorialspoint;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class MainApp {
 	public static void main(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+		AbstractApplicationContext abstractContext = new ClassPathXmlApplicationContext("Beans.xml");
 		
 		HelloWorld(context);
 		SingletonHello(context);
 		PrototypeHello(context);
+		InitAndDestroy(abstractContext);
 	}
 	
 	public static void HelloWorld(ApplicationContext context){
@@ -35,8 +38,13 @@ public class MainApp {
 		objB.getMessage();
 	}
 	
-	public static void InitAndDestroy(ApplicationContext context){
+	public static void InitAndDestroy(AbstractApplicationContext context){
+		// Abstract context is needed b/c registerShutdownHook() needs to be called to make sure
+		// shutdown happens properly
 		
+		HelloWorld bean = (HelloWorld) context.getBean("helloInit");
+		bean.getMessage();
+		context.registerShutdownHook(); // Tells the bean to shut down
 	}
 	
 	
